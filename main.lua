@@ -108,7 +108,6 @@ function love.update(dt)
 	
 	--gestion du clavier servant à l'action
 	if love.keyboard.isDown("left") then
-		--à faire
 		lastTimeClavi = lastTimeClavi + dt --ajout du temps passé depuis le dernier appel dans notre compteur / Pour l'utilisation clavier
 		
 		if can_i_put_my_piece_on_the_matrix(matrix, movingPiece[2], 0,-1) and lastTimeClavi >= (maxTimestamp) then
@@ -116,9 +115,8 @@ function love.update(dt)
 			lastTimeClavi = lastTimeClavi - maxTimestamp
 		end
 	elseif love.keyboard.isDown("right") then
-		--à faire
 		lastTimeClavi = lastTimeClavi + dt --ajout du temps passé depuis le dernier appel dans notre compteur / Pour l'utilisation clavier
-		--put_an_offset_on_my_piece(movingPiece[2], 0, 1)
+		
 		if can_i_put_my_piece_on_the_matrix(matrix, movingPiece[2], 0, 1) and lastTimeClavi >= (maxTimestamp) then
 			movingPiece[2] =put_an_offset_on_my_piece(movingPiece[2], 0, 1)
 			lastTimeClavi = lastTimeClavi - maxTimestamp
