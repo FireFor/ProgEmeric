@@ -79,7 +79,7 @@ function donne_la_position_de_la_piece(t, y, x, r) --Type, position Y, position 
 			piece = {{y + 0, x + 1}, {y + 0, x + 0}, {y + 0, x - 1}, {y + 0, x - 2}}
 		elseif r == 270 then -- En position 270°
 			piece = {{y + 1, x + 0}, {y + 0, x + 0}, {y - 1, x + 0}, {y - 2, x + 0}}
-		end if
+		end
 	elseif t == 2 then  -- Type de pièce : "L" inversé
 		if r == 0 then -- En position 0°
 			piece = {{y - 1, x - 1}, {y + 0, x - 1}, {y + 0, x + 0}, {y + 0, x + 1}} -- La pièce a pour "centre" le deuxieme block de la grande barre
@@ -89,7 +89,7 @@ function donne_la_position_de_la_piece(t, y, x, r) --Type, position Y, position 
 			piece = {{y + 1, x + 1}, {y + 0, x + 1}, {y + 0, x + 0}, {y + 0, x - 1}}
 		elseif r == 270 then -- En position 270°
 			piece = {{y + 1, x - 1}, {y + 1, x + 0}, {y + 0, x + 0}, {y - 1, x + 0}}
-		end if		
+		end		
 	elseif t == 3 then  -- Type de pièce : "L" classique
 		if r == 0 then -- En position 0°
 			piece = {{y + 0, x - 1}, {y + 0, x + 0}, {y + 0, x + 1}, {y - 1, x + 1}} -- La pièce a pour "centre" le deuxieme block de la grande barre
@@ -99,7 +99,7 @@ function donne_la_position_de_la_piece(t, y, x, r) --Type, position Y, position 
 			piece = {{y + 0, x + 1}, {y + 0, x + 0}, {y + 0, x - 1}, {y + 1, x - 1}}
 		elseif r == 270 then -- En position 270°
 			piece = {{y + 1, x + 0}, {y + 0, x + 0}, {y - 1, x + 0}, {y - 1, x - 1}}
-		end if	
+		end	
 	elseif t == 4 then  -- Type de pièce : Carré
 		if r == 0 then -- En position 0°
 			piece = {{y - 1, x + 0}, {y + 0, x + 0}, {y - 1, x + 1}, {y + 0, x + 1}} -- La pièce a pour "centre" le coin bas gauche
@@ -109,7 +109,7 @@ function donne_la_position_de_la_piece(t, y, x, r) --Type, position Y, position 
 			piece = {{y - 1, x + 0}, {y + 0, x + 0}, {y - 1, x + 1}, {y + 0, x + 1}}
 		elseif r == 270 then -- En position 270°
 			piece = {{y - 1, x + 0}, {y + 0, x + 0}, {y - 1, x + 1}, {y + 0, x + 1}}
-		end if	
+		end	
 	elseif t == 5 then  -- Type de pièce : "Z" inversé
 		if r == 0 then -- En position 0°
 			piece = {{y + 0, x - 1}, {y + 0, x + 0}, {y - 1, x + 0}, {y - 1, x + 1}} -- La pièce a pour "centre" le deuxieme block du milieu en bas
@@ -119,7 +119,7 @@ function donne_la_position_de_la_piece(t, y, x, r) --Type, position Y, position 
 			piece = {{y + 0, x + 1}, {y + 0, x + 0}, {y + 1, x + 0}, {y + 1, x - 1}}
 		elseif r == 270 then -- En position 270°
 			piece = {{y + 1, x + 0}, {y + 0, x + 0}, {y + 0, x - 1}, {y - 1, x - 1}}
-		end if	
+		end	
 	elseif t == 6 then  -- Type de pièce : "T"
 		if r == 0 then -- En position 0°
 			piece = {{y + 0, x - 1}, {y + 0, x + 0}, {y - 1, x + 0}, {y + 0, x + 1}} -- La pièce a pour "centre" le deuxieme block de la grande barre
@@ -129,7 +129,7 @@ function donne_la_position_de_la_piece(t, y, x, r) --Type, position Y, position 
 			piece = {{y + 0, x + 1}, {y + 0, x + 0}, {y + 1, x + 0}, {y + 0, x - 1}}
 		elseif r == 270 then -- En position 270°
 			piece = {{y + 1, x + 0}, {y + 0, x + 0}, {y + 0, x - 1}, {y - 1, x + 0}}
-		end if	
+		end	
 	elseif t == 7 then  -- Type de pièce : "Z" classique
 		if r == 0 then -- En position 0°
 			piece = {{y + 0, x + 1}, {y + 0, x + 0}, {y - 1, x + 0}, {y - 1, x - 1}} -- La pièce a pour "centre" le deuxieme block du milieu en bas
@@ -139,7 +139,7 @@ function donne_la_position_de_la_piece(t, y, x, r) --Type, position Y, position 
 			piece = {{y + 0, x - 1}, {y + 0, x + 0}, {y + 1, x + 0}, {y + 1, x + 1}}
 		elseif r == 270 then -- En position 270°
 			piece = {{y - 1, x + 0}, {y + 0, x + 0}, {y + 0, x - 1}, {y + 1, x - 1}}
-		end if
+		end
 	end
 	
 	return piece
