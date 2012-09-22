@@ -13,64 +13,59 @@
 -- passer le debug en affichage dans l'écran
 -- --------------------------------------------------
 
+--configuration, initialisation et calculs
 function love.load()
-	--configuration
-	coefActionsParTour = 0.125 --coefficient déterminant le nombre d'actions par tour (pas d'unité ?)
-	coefTimestamp = 0.95 --coefficient pour accélérer le temps d'un tour (en % / 100)
-	matrixHeight = 14 --hauteur de la matrice (en bloc de pièce)
-	matrixWidth = 7 --largeur de la matrice (en bloc de pièce)
-	maxTimestamp = 0.5 --temps d'un tour (en secondes)
+	math.randomseed(os.time()) --on veut des nombres pseudo aléatoires à peu près réalistes
 	
-	colors = {} --couleurs (rien pour 0, 1 à 7 pour les blocs de pièces, 8 pour les contours)
-	colors[1] = {0, 255, 255} --cyan
-	colors[2] = {0, 0, 255} --bleu
-	colors[3] = {255, 127, 0} --orange
-	colors[4] = {255, 255, 0} --jaune
-	colors[5] = {0, 255, 0} --vert
-	colors[6] = {255, 0, 255} --violet
-	colors[7] = {255, 0, 0} --rouge
-	colors[8] = {255, 255, 255} --blanc
+	bloc_marge_initiale = nil --décalage horizontal pour centrer les nouvelles pièces (en bloc de pièce)
+	bloc_taille = nil --largeur d'un bloc de pièce = puissance de 2 maximum (en pixels)
+	compteur_de_temps = 0.0 --compteur de temps pour savoir quand faire quoi (en secondes)
+	compteur_de_temps_clavier = 0.0 --compteur de temps pour savoir quand faire quoi, version clavier (en secondes)
+	compteur_de_temps_clavier_maximum = nil --temps entre chaque touche d'action (en secondes)
+	compteur_de_temps_coefficient = 0.95 --coefficient pour accélérer le temps d'un tour (en % / 100)
+	compteur_de_temps_maximum = 0.5 --temps d'un tour (en secondes)
+	couleurs = {} --couleurs
+	fin_de_partie = false --drapeau marquant la fin du jeu (booléen)
+	matrice = {} --tableau multi-dimensionnel contenant nos pièces et blocs (pour stocker des lignes puis des colonnes de blocs de pièces)
+	matrice_hauteur = 14 --hauteur de la matrice (en bloc de pièce)
+	matrice_largeur = 7 --largeur de la matrice (en bloc de pièce)
+	matrice_marge_hauteur = nil --décalage vertical pour centrer la matrice (en pixels)
+	matrice_marge_largeur = nil --décalage horizontal pour centrer la matrice (en pixels)
+	nombre_actions_par_tour = 0.125 --coefficient déterminant le nombre d'actions par tour (pas d'unité ?)
+	piece_en_mouvement = {0, {{0, 0}, {0, 0}, {0, 0}, {0, 0}}} --pièce en cours de mouvement (couleur puis coordonnées (ligne, colonne))
 	
-	--initialisation
-	math.randomseed(os.time()) --on veut des pseudo-vrais nombres aléatoires
+	couleurs[1] = {0, 255, 255} --cyan pour I
+	couleurs[2] = {0, 0, 255} --bleu pour J
+	couleurs[3] = {255, 127, 0} --orange pour L
+	couleurs[4] = {255, 255, 0} --jaune pour O
+	couleurs[5] = {0, 255, 0} --vert pour S
+	couleurs[6] = {255, 0, 255} --violet pour T
+	couleurs[7] = {255, 0, 0} --rouge pour Z
+	couleurs[8] = {255, 255, 255} --blanc
 	
-	gameOver = false --drapeau marquant la fin du jeu (booléen)
-	lastTimestamp = 0.0 --compteur de temps pour savoir quand faire quoi (en secondes)
-	lastTimeClavi = 0.0 --compteur de temps pour savoir quand faire quoi, version clavier (en secondes)
-	matrix = {} --tableau multi-dimensionnel contenant nos pièces et blocs (pour stocker des lignes puis des colonnes de blocs de pièces)
-	movingPiece = {0, {{0, 0}, {0, 0}, {0, 0}, {0, 0}}} --pièce en cours de mouvement (couleur puis coordonnées (ligne, colonne))
+	bloc_marge_initiale = math.floor((matrice_largeur - 4) / 2)
+	bloc_taille = math.pow(2, math.floor(math.log(math.min(love.graphics:getWidth(), love.graphics:getHeight()) / math.max(matrice_largeur, matrice_hauteur)) / math.log(2)))
+	compteur_de_temps_clavier_maximum = nombre_actions_par_tour * compteur_de_temps_maximum
+	matrice_marge_hauteur = (love.graphics:getHeight() - matrice_hauteur * bloc_taille) / 2
+	matrice_marge_largeur = (love.graphics:getWidth() - matrice_largeur * bloc_taille) / 2
 	
-	squareX = math.floor((matrixWidth - 4) / 2) --décalage horizontal pour centrer les nouvelles pièces (en bloc de pièce)
-	squareWidth = math.pow(2, math.floor(math.log(math.min(love.graphics:getWidth(), love.graphics:getHeight()) / math.max(matrixWidth, matrixHeight)) / math.log(2))) --largeur d'un bloc de pièce = puissance de 2 maximum (en pixels)
-	matrixX = (love.graphics:getWidth() - matrixWidth * squareWidth) / 2 --décalage horizontal pour centrer la matrice (en pixels)
-	matrixY = (love.graphics:getHeight() - matrixHeight * squareWidth) / 2 --décalage vertical pour centrer la matrice (en pixels)
-	maxTimeClavi = coefActionsParTour * maxTimestamp --temps entre chaque touche d'action (en secondes)
-	
-	--initiliasation de la matrice suivant sa taille
-	for j = 1, matrixHeight do --pour chaque ligne de matrice...
-		matrix[j] = {} --création de la ligne j
+	for y = 1, matrice_hauteur do --pour chaque ligne de matrice...
+		matrice[y] = {} --création de la ligne y
 		
-		for i = 1, matrixWidth do --pour chaque colonne de la matrice...
-			matrix[j][i] = 0 --bloc vide inséré dans la ligne j et la colonne i
+		for x = 1, matrice_largeur do --pour chaque colonne de la matrice...
+			matrice[y][x] = 0 --bloc vide inséré dans la ligne y et la colonne x
 		end
 	end
 	
 	--debug
-	print('coefActionsParTour = ', coefActionsParTour)
-	print('coefTimestamp = ', coefTimestamp)
-	print('matrixHeight = ', matrixHeight)
-	print('matrixWidth = ', matrixWidth)
-	print('maxTimestamp = ', maxTimestamp)
-	
-	print('squareX = ', squareX)
-	print('squareWidth = ', squareWidth)
-	print('matrixX = ', matrixX)
-	print('matrixY = ', matrixY)
-	print('maxTimeClavi = ', maxTimeClavi)
+	print('bloc_marge_initiale = ', bloc_marge_initiale)
+	print('bloc_taille = ', bloc_taille)
+	print('compteur_de_temps_clavier_maximum = ', compteur_de_temps_clavier_maximum)
+	print('matrice_marge_hauteur = ', matrice_marge_hauteur)
+	print('matrice_marge_largeur = ', matrice_marge_largeur)
 end
 
---donner une nouvelle pièce
-function give_me_a_new_piece(t, y, x) --Type, margin Y, margin X
+function donne_la_piece(t, y, x) --Type, margin Y, margin X
 	piece = {}
 	
 	--description de la pièce suivant le type/couleur choisi (t) avec le centrage (y;x)
@@ -93,10 +88,9 @@ function give_me_a_new_piece(t, y, x) --Type, margin Y, margin X
 	return piece
 end
 
---suis-je hors limite ?
-function am_i_off_limit(p, y, x) --Piece, offset Y, offset X
+function suis_je_hors_limite(p, y, x) --Piece, offset Y, offset X
 	for s = 1, 4 do
-		if p[s][1] + y <= 0 or p[s][1] + y > matrixHeight or p[s][2] + x <= 0 or p[s][2] + x > matrixWidth then
+		if p[s][1] + y <= 0 or p[s][1] + y > matrice_hauteur or p[s][2] + x <= 0 or p[s][2] + x > matrice_largeur then
 			return true --si un des blocs de la pièce est en dehors de la matrice, la réponse est oui
 		end
 	end
@@ -104,8 +98,7 @@ function am_i_off_limit(p, y, x) --Piece, offset Y, offset X
 	return false --si on arrive jusqu'ici, la réponse est non
 end
 
---puis-je mettre ma pièce sur la matrice ?
-function can_i_put_my_piece_on_the_matrix(m, p, y, x) --Matrix, Piece, offset Y, offset X
+function puis_je_mettre_la_piece_sur_la_matrice(m, p, y, x) --matrice, Piece, offset Y, offset X
 	for s = 1, 4 do
 		if m[p[s][1] + y][p[s][2] + x] ~= 0 then
 			return false --si la matrice contient déjà quelque chose à un des blocs de la pièce, la réponse est non
@@ -115,8 +108,7 @@ function can_i_put_my_piece_on_the_matrix(m, p, y, x) --Matrix, Piece, offset Y,
 	return true --si on arrive jusqu'ici, la réponse est oui
 end
 
---mettre un décalage sur la pièce
-function put_an_offset_on_my_piece(p, y, x) --Piece, offset Y, offset X
+function decale_la_piece(p, y, x) --Piece, offset Y, offset X
 	for s = 1, 4 do
 		p[s] = {p[s][1] + y, p[s][2] + x}
 	end
@@ -124,17 +116,15 @@ function put_an_offset_on_my_piece(p, y, x) --Piece, offset Y, offset X
 	return p
 end
 
---essayer de bouger la pièce et le faire si possible
-function try_and_move_the_piece(m, p, y, x) --Matrix, Piece, offset Y, offset X
-	if not am_i_off_limit(p, y, x) and can_i_put_my_piece_on_the_matrix(m, p, y, x) then
-		p = put_an_offset_on_my_piece(p, y, x)
+function tenter_de_bouger_la_piece(m, p, y, x) --matrice, Piece, offset Y, offset X
+	if not suis_je_hors_limite(p, y, x) and puis_je_mettre_la_piece_sur_la_matrice(m, p, y, x) then
+		p = decale_la_piece(p, y, x)
 	end
 	
 	return p
 end
 
---copier la pièce sur la matrice
-function copy_me_to_the_matrix(m, p, t) --Matrix, Piece, Type
+function ecrit_la_piece_sur_la_matrice(m, p, t) --matrice, Piece, Type
 	for s = 1, 4 do
 		m[p[s][1]][p[s][2]] = t
 	end
@@ -142,53 +132,54 @@ function copy_me_to_the_matrix(m, p, t) --Matrix, Piece, Type
 	return m
 end
 
+--calculs suivant le temps, coeur du jeu
 function love.update(dt)
-	lastTimestamp = lastTimestamp + dt --ajout du temps passé depuis le dernier appel dans notre compteur
+	compteur_de_temps = compteur_de_temps + dt --ajout du temps passé depuis le dernier appel dans notre compteur
 	
 	--gestion du clavier servant à l'action (= qui restent appuyées)
 	if love.keyboard.isDown("left") or love.keyboard.isDown("right") or love.keyboard.isDown("down") or love.keyboard.isDown("up") then --moche, j'ai pas mieux pour le moment, un flag géré dans keypressed peut-être ?
-		lastTimeClavi = lastTimeClavi + dt --ajout du temps passé depuis le dernier appel dans notre compteur, version clavier
+		compteur_de_temps_clavier = compteur_de_temps_clavier + dt --ajout du temps passé depuis le dernier appel dans notre compteur, version clavier
 		
-		if lastTimeClavi >= maxTimeClavi then
+		if compteur_de_temps_clavier >= compteur_de_temps_clavier_maximum then
 			if love.keyboard.isDown("left") then
-				try_and_move_the_piece(matrix, movingPiece[2], 0, -1)
+				tenter_de_bouger_la_piece(matrice, piece_en_mouvement[2], 0, -1)
 			elseif love.keyboard.isDown("right") then
-				try_and_move_the_piece(matrix, movingPiece[2], 0, 1)
+				tenter_de_bouger_la_piece(matrice, piece_en_mouvement[2], 0, 1)
 			elseif love.keyboard.isDown("down") then
-				try_and_move_the_piece(matrix, movingPiece[2], 1, 0)
+				tenter_de_bouger_la_piece(matrice, piece_en_mouvement[2], 1, 0)
 			elseif love.keyboard.isDown("up") then
 				--hum
 			end
 			
-			lastTimeClavi = lastTimeClavi - maxTimeClavi
+			compteur_de_temps_clavier = compteur_de_temps_clavier - compteur_de_temps_clavier_maximum
 		end
 	end
 	
-	if lastTimestamp >= maxTimestamp then --a-t-on fini un tour ?
-		if movingPiece[1] == 0 then --doit-on générer une nouvelle pièce ?
-			movingPiece[1] = math.random(7) --lancer de dé
-			movingPiece[2] = give_me_a_new_piece(movingPiece[1], 0, squareX) --donne moi une nouvelle pièce !
+	if compteur_de_temps >= compteur_de_temps_maximum then --a-t-on fini un tour ?
+		if piece_en_mouvement[1] == 0 then --doit-on générer une nouvelle pièce ?
+			piece_en_mouvement[1] = math.random(7) --lancer de dé
+			piece_en_mouvement[2] = donne_la_piece(piece_en_mouvement[1], 0, bloc_marge_initiale) --donne moi une nouvelle pièce !
 			
-			gameOver = not can_i_put_my_piece_on_the_matrix(matrix, movingPiece[2], 0, 0) --si la pièce nouvellement créé tente d'écraser des blocs déjà présent, game over
+			fin_de_partie = not puis_je_mettre_la_piece_sur_la_matrice(matrice, piece_en_mouvement[2], 0, 0) --si la pièce nouvellement créé tente d'écraser des blocs déjà présent, game over
 		else --pas de nouvelle pièce à générer
 			--tentons de faire descendre l'actuelle
-			if not am_i_off_limit(movingPiece[2], 1, 0) and can_i_put_my_piece_on_the_matrix(matrix, movingPiece[2], 1, 0) then --semblable à try_and_move_the_piece, on ne pourrait pas l'utiliser ?
-				movingPiece[2] = put_an_offset_on_my_piece(movingPiece[2], 1, 0)
+			if not suis_je_hors_limite(piece_en_mouvement[2], 1, 0) and puis_je_mettre_la_piece_sur_la_matrice(matrice, piece_en_mouvement[2], 1, 0) then --semblable à tenter_de_bouger_la_piece, on ne pourrait pas l'utiliser ?
+				piece_en_mouvement[2] = decale_la_piece(piece_en_mouvement[2], 1, 0)
 			else
 				--on ne peut plus descendre
-				matrix = copy_me_to_the_matrix(matrix, movingPiece[2], movingPiece[1])
-				movingPiece[1] = 0 --demande de nouvelle pièce pour le prochain tour
+				matrice = ecrit_la_piece_sur_la_matrice(matrice, piece_en_mouvement[2], piece_en_mouvement[1])
+				piece_en_mouvement[1] = 0 --demande de nouvelle pièce pour le prochain tour
 				
-				maxTimestamp = coefTimestamp * maxTimestamp --prochain tour plus rapide en attendant la gestion des lignes / score / niveaux...
-				print('maxTimestamp = ', maxTimestamp) --debug
+				compteur_de_temps_maximum = compteur_de_temps_coefficient * compteur_de_temps_maximum --prochain tour plus rapide en attendant la gestion des lignes / score / niveaux...
+				print('compteur_de_temps_maximum = ', compteur_de_temps_maximum) --debug
 			end
 		end
 		
-		lastTimestamp = lastTimestamp - maxTimestamp --on enlève le temps d'un tour au compteur
+		compteur_de_temps = compteur_de_temps - compteur_de_temps_maximum --on enlève le temps d'un tour au compteur
 	end
 	
-	if gameOver then
-		print('Game Over!') --debug
+	if fin_de_partie then
+		print('Fin de partie !') --debug
 		
 		love.timer.sleep(3) --3 sec de pause, utile pour debug
 		love.event.quit() --game over, bye
@@ -198,31 +189,31 @@ end
 --function d'affichage, on dessine la matrice puis la pièce en mouvement
 function love.draw()
 	--contour
-	love.graphics.setColor(colors[8][1], colors[8][2], colors[8][3])
-	love.graphics.rectangle("line", matrixX, matrixY, matrixWidth * squareWidth, matrixHeight * squareWidth)
+	love.graphics.setColor(couleurs[8][1], couleurs[8][2], couleurs[8][3])
+	love.graphics.rectangle("line", matrice_marge_largeur, matrice_marge_hauteur, matrice_largeur * bloc_taille, matrice_hauteur * bloc_taille)
 	
 	--matrice
-	for j = 1, matrixHeight do
-		for i = 1, matrixWidth do
-			if matrix[j][i] ~= 0 then
-				love.graphics.setColor(colors[matrix[j][i]][1], colors[matrix[j][i]][2], colors[matrix[j][i]][3])
-				love.graphics.rectangle("fill", matrixX + (i - 1) * squareWidth, matrixY + (j - 1) * squareWidth, squareWidth, squareWidth)
+	for j = 1, matrice_hauteur do
+		for i = 1, matrice_largeur do
+			if matrice[j][i] ~= 0 then
+				love.graphics.setColor(couleurs[matrice[j][i]][1], couleurs[matrice[j][i]][2], couleurs[matrice[j][i]][3])
+				love.graphics.rectangle("fill", matrice_marge_largeur + (i - 1) * bloc_taille, matrice_marge_hauteur + (j - 1) * bloc_taille, bloc_taille, bloc_taille)
 				
 				--contour du bloc de pièce
-				love.graphics.setColor(colors[8][1], colors[8][2], colors[8][3])
-				love.graphics.rectangle("line", matrixX + (i - 1) * squareWidth, matrixY + (j - 1) * squareWidth, squareWidth, squareWidth)
+				love.graphics.setColor(couleurs[8][1], couleurs[8][2], couleurs[8][3])
+				love.graphics.rectangle("line", matrice_marge_largeur + (i - 1) * bloc_taille, matrice_marge_hauteur + (j - 1) * bloc_taille, bloc_taille, bloc_taille)
 			end
 		end
 	end
 	
 	--pièce en mouvement
-	if movingPiece[1] ~= 0 then
+	if piece_en_mouvement[1] ~= 0 then
 		for s = 1, 4 do
-			love.graphics.setColor(colors[movingPiece[1]][1], colors[movingPiece[1]][2], colors[movingPiece[1]][3])
-			love.graphics.rectangle("fill", matrixX + (movingPiece[2][s][2] - 1) * squareWidth, matrixY + (movingPiece[2][s][1] - 1) * squareWidth, squareWidth, squareWidth)
+			love.graphics.setColor(couleurs[piece_en_mouvement[1]][1], couleurs[piece_en_mouvement[1]][2], couleurs[piece_en_mouvement[1]][3])
+			love.graphics.rectangle("fill", matrice_marge_largeur + (piece_en_mouvement[2][s][2] - 1) * bloc_taille, matrice_marge_hauteur + (piece_en_mouvement[2][s][1] - 1) * bloc_taille, bloc_taille, bloc_taille)
 			
-			love.graphics.setColor(colors[8][1], colors[8][2], colors[8][3])
-			love.graphics.rectangle("line", matrixX + (movingPiece[2][s][2] - 1) * squareWidth, matrixY + (movingPiece[2][s][1] - 1) * squareWidth, squareWidth, squareWidth)
+			love.graphics.setColor(couleurs[8][1], couleurs[8][2], couleurs[8][3])
+			love.graphics.rectangle("line", matrice_marge_largeur + (piece_en_mouvement[2][s][2] - 1) * bloc_taille, matrice_marge_hauteur + (piece_en_mouvement[2][s][1] - 1) * bloc_taille, bloc_taille, bloc_taille)
 		end
 	end
 end
@@ -230,7 +221,7 @@ end
 --gestion des touches n'ayant pas vocation de rester appuyées
 function love.keypressed(key, unicode)
 	if key == "escape" then
-		print('Bye!')
+		print('Au revoir.')
 		
 		love.event.quit()
 	end
@@ -239,6 +230,6 @@ end
 --gestion du relachement des touches
 function love.keyreleased(key, unicode)
 	if key == "left" or key == "right" or key == "down" or key == "up" then
-		lastTimeClavi = 0.0 --reset du temps d'appui de touche de direction
+		compteur_de_temps_clavier = 0.0 --reset du temps d'appui de touche de direction
 	end
 end
