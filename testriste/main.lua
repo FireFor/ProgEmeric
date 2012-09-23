@@ -22,7 +22,7 @@ function love.load()
 	compteur_de_temps = 0.0 --compteur de temps pour savoir quand faire quoi (en secondes)
 	compteur_de_temps_clavier = 0.0 --compteur de temps pour savoir quand faire quoi, version clavier (en secondes)
 	compteur_de_temps_clavier_maximum = nil --temps entre chaque touche d'action (en secondes)
-	compteur_de_temps_coefficient = 0.95 --coefficient pour accélérer le temps d'un tour (en % / 100)
+	compteur_de_temps_coefficient = 0.995 --coefficient pour accélérer le temps d'un tour (en % / 100)
 	compteur_de_temps_maximum = 0.5 --temps d'un tour (en secondes)
 	couleurs = {} --couleurs
 	fin_de_partie = false --drapeau marquant la fin du jeu (booléen)
@@ -34,7 +34,9 @@ function love.load()
 	nombre_actions_par_tour = 0.125 --coefficient déterminant le nombre d'actions par tour (pas d'unité ?)
 	piece_en_mouvement = {0, {{0, 0}, {0, 0}, {0, 0}, {0, 0}}} --pièce en cours de mouvement (couleur puis coordonnées (ligne, colonne))
 	piece_en_mouvement_rotation = {0, {0, 0}, 0} --pièce en cours de mouvement (couleur puis coordonnées principale (ligne, colonne) et enfin son état rotatif)
+	pieces = {} --pieces
 	
+	--format RGB/RVB sur un octet (de 0 à 255)
 	couleurs[1] = {0, 255, 255} --cyan pour I
 	couleurs[2] = {0, 0, 255} --bleu pour J
 	couleurs[3] = {255, 127, 0} --orange pour L
@@ -44,7 +46,18 @@ function love.load()
 	couleurs[7] = {255, 0, 0} --rouge pour Z
 	couleurs[8] = {255, 255, 255} --blanc
 	
-	bloc_marge_initiale = math.floor((matrice_largeur - 4) / 2)
+	--jeu de 4 coordonnées {y, x} décrivant la pièce sans rotation
+	--attention il faut y >= 0
+	--le centre de la pièce correspond à x = 0
+	pieces[1] = {{0, -1}, {0, 0}, {0, 1}, {0, 2}} --I
+	pieces[2] = {{0, -2}, {0, -1}, {0, 0}, {1, 0}} --J
+	pieces[3] = {{0, 0}, {0, 1}, {0, 2}, {1, 0}} --L
+	pieces[4] = {{0, 0}, {0, 1}, {1, 0}, {1, 1}} --O
+	pieces[5] = {{0, 0}, {0, 1}, {1, -1}, {1, 0}} --S
+	pieces[6] = {{0, -1}, {0, 0}, {0, 1}, {1, 0}} --T
+	pieces[7] = {{0, -1}, {0, 0}, {1, 0}, {1, 1}} --Z
+	
+	bloc_marge_initiale = math.floor(matrice_largeur / 2.0)
 	bloc_taille = math.pow(2, math.floor(math.log(math.min(love.graphics:getWidth(), love.graphics:getHeight()) / math.max(matrice_largeur, matrice_hauteur)) / math.log(2)))
 	compteur_de_temps_clavier_maximum = nombre_actions_par_tour * compteur_de_temps_maximum
 	matrice_marge_hauteur = (love.graphics:getHeight() - matrice_hauteur * bloc_taille) / 2
@@ -64,6 +77,14 @@ function love.load()
 	print('compteur_de_temps_clavier_maximum = ', compteur_de_temps_clavier_maximum)
 	print('matrice_marge_hauteur = ', matrice_marge_hauteur)
 	print('matrice_marge_largeur = ', matrice_marge_largeur)
+end
+
+function debug_matrice(m)
+	for i,v in ipairs(m) do for i2,v2 in ipairs(v) do print('m[', i, '][', i2, '] = ', v2) end end
+end
+
+function debug_piece(p)
+	for i,v in ipairs(p) do for i2,v2 in ipairs(v) do print('p[', i, '][', i2, '] = ', v2) end end
 end
 
 function donne_la_position_de_la_piece(t, y, x, r) --Type, position Y, position X, Rotation
@@ -146,23 +167,10 @@ function donne_la_position_de_la_piece(t, y, x, r) --Type, position Y, position 
 end
 
 function donne_la_piece(t, y, x) --Type, margin Y, margin X
-	piece = {}
+	piece = {{0, 0}, {0, 0}, {0, 0}, {0, 0}}
 	
-	--description de la pièce suivant le type/couleur choisi (t) avec le centrage (y;x)
-	if t == 1 then 
-		piece = {{y + 2, x + 1}, {y + 2, x + 2}, {y + 2, x + 3}, {y + 2, x + 4}}
-	elseif t == 2 then
-		piece = {{y + 2, x + 1}, {y + 2, x + 2}, {y + 2, x + 3}, {y + 1, x + 1}}
-	elseif t == 3 then
-		piece = {{y + 2, x + 1}, {y + 2, x + 2}, {y + 2, x + 3}, {y + 1, x + 3}}
-	elseif t == 4 then
-		piece = {{y + 2, x + 1}, {y + 2, x + 2}, {y + 1, x + 1}, {y + 1, x + 2}}
-	elseif t == 5 then
-		piece = {{y + 2, x + 1}, {y + 2, x + 2}, {y + 1, x + 2}, {y + 1, x + 3}}
-	elseif t == 6 then
-		piece = {{y + 2, x + 1}, {y + 2, x + 2}, {y + 2, x + 3}, {y + 1, x + 2}}
-	elseif t == 7 then
-		piece = {{y + 2, x + 2}, {y + 2, x + 3}, {y + 1, x + 1}, {y + 1, x + 2}}
+	for s = 1, 4 do
+		piece[s] = {pieces[t][s][1] + y, pieces[t][s][2] + x}
 	end
 	
 	return piece
@@ -238,7 +246,7 @@ function love.update(dt)
 	if compteur_de_temps >= compteur_de_temps_maximum then --a-t-on fini un tour ?
 		if piece_en_mouvement[1] == 0 then --doit-on générer une nouvelle pièce ?
 			piece_en_mouvement[1] = math.random(7) --lancer de dé
-			piece_en_mouvement[2] = donne_la_piece(piece_en_mouvement[1], 0, bloc_marge_initiale) --donne moi une nouvelle pièce !
+			piece_en_mouvement[2] = donne_la_piece(piece_en_mouvement[1], 1, bloc_marge_initiale) --donne moi une nouvelle pièce !
 			
 			fin_de_partie = not puis_je_mettre_la_piece_sur_la_matrice(matrice, piece_en_mouvement[2], 0, 0) --si la pièce nouvellement créé tente d'écraser des blocs déjà présent, game over
 		else --pas de nouvelle pièce à générer
@@ -259,8 +267,6 @@ function love.update(dt)
 	end
 	
 	if fin_de_partie then
-		print('Fin de partie !') --debug
-		
 		love.timer.sleep(3) --3 sec de pause, utile pour debug
 		love.event.quit() --game over, bye
 	end
@@ -301,8 +307,6 @@ end
 --gestion des touches n'ayant pas vocation de rester appuyées
 function love.keypressed(key, unicode)
 	if key == "escape" then
-		print('Au revoir.')
-		
 		love.event.quit()
 	end
 end
