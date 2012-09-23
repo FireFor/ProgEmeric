@@ -1,15 +1,23 @@
-Bonjour ?
+Le Testriste* est un remake du jeu Tetris. Ce remake n'a pas pour objectif de rÃ©aliser un projet commercial ou mÃªme Ã  Ãªtre diffusÃ© Ã  un quelconque public. Nous n'avons aucun rapport avec le(s) jeu(x) ni leurs propriÃ©taires.
 
-Le Tetriste est un remake du jeu Tetris. Ce remake n'a pas pour objectif de réaliser un projet comercial ou même à être diffusé à un quelquonc public.
-Le jeu est un point de depart à un projet plus grand. Il à pour objectifs d'aprendre aux développeur à coder en lua ainsi qu'a réaliser un projet en commun.
-Le développement de ce jeu n'est donc qu'un test et un apprentissage.
+Le jeu est un point de dÃ©part Ã  un projet plus grand : il a pour objectif d'apprendre aux dÃ©veloppeurs Ã  coder en lua via LÃ–VE ainsi qu'Ã  rÃ©aliser un projet en commun.
+Le dÃ©veloppement de ce jeu n'est donc qu'un test et un apprentissage.
 
-Le jeu : 
-	- Genre : Puzzule-game
-	- Objectif : Réaliser un maximum de ligne pleines.
+Le jeu (similaire Ã  nos souvenirs d'Ã©poque) :
+	- Genre : Puzzle-game
+	- Objectif : RÃ©aliser un maximum de ligne pleines.
 	- Game-play :
-		Une pièce composé de 4 blocks tombe du ciel dans un puit de largeur égale à 7 blocks et de hauteur 14 block.
-		Le joueur peut déplacer cette pièce de façon lattéral (bouton gauche/droite)
-		Le joueur peut faire faire des rotations de +ou- 90° à la pièce (bouton Z/A)
-		La physique du jeu empeche une pièce de se déplacer en dehors des espaces vide du puit. 
-		Si le joueur arrive à réaliser une ligne horizontal de 7 blocks consécutif alors un tetris est gagné et la ligne en question disparait.
+		Une piÃ¨ce composÃ©e de 4 blocs tombe du ciel dans un puits de largeur Ã©gale Ã  7 blocs et de hauteur 14 blocs.
+		Le joueur peut dÃ©placer cette piÃ¨ce de faÃ§on latÃ©rale (touches gauche/droite) dans les limites du puits.
+		Le joueur peut faire faire des rotations de + ou - 90Â° Ã  la piÃ¨ce (touches Z/A).
+		Si le joueur arrive Ã  rÃ©aliser une ligne horizontale complÃ¨te alors la ligne en question disparait.
+
+Il reste beaucoup de choses Ã  rÃ©aliser mais l'intention n'est pas de faire un jeu complÃ¨tement fini Ã  100 % sans bugs, mais principalement de rÃ©aliser un premier projet avec LÃ–VE. Si vous vous Ãªtes perdus ici vous pouvez faire ce que vous voulez avec le code, cf la non licence.
+
+Quelques liens :
+
+Tetris sur WikipÃ©dia : https://fr.wikipedia.org/wiki/Tetris
+Framework LÃ–VE : https://love2d.org/
+Unlicense : http://unlicense.org/
+
+* : dÃ©solÃ© pour le jeu de mots...
