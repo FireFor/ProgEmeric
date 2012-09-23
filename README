@@ -1,23 +1,22 @@
-Le Testriste* est un remake du jeu Tetris. Ce remake n'a pas pour objectif de réaliser un projet commercial ou même à être diffusé à un quelconque public. Nous n'avons aucun rapport avec le(s) jeu(x) ni leurs propriétaires.
+Le Testriste est un remake du jeu Tetris. Ce remake n'a pas pour objectif de réaliser un projet commercial ou même à être diffusé à un quelconque public. Nous n'avons aucun rapport avec le(s) jeu(x) ni leurs propriétaires.
 
 Le jeu est un point de départ à un projet plus grand : il a pour objectif d'apprendre aux développeurs à coder en lua via LÖVE ainsi qu'à réaliser un projet en commun.
 Le développement de ce jeu n'est donc qu'un test et un apprentissage.
 
-Le jeu (similaire à nos souvenirs d'époque) :
-	- Genre : Puzzle-game
-	- Objectif : Réaliser un maximum de ligne pleines.
-	- Game-play :
-		Une pièce composée de 4 blocs tombe du ciel dans un puits de largeur égale à 7 blocs et de hauteur 14 blocs.
-		Le joueur peut déplacer cette pièce de façon latérale (touches gauche/droite) dans les limites du puits.
-		Le joueur peut faire faire des rotations de + ou - 90° à la pièce (touches Z/A).
-		Si le joueur arrive à réaliser une ligne horizontale complète alors la ligne en question disparait.
+Le jeu (d'après nos souvenirs d'époque) :
+
+	* Genre : Puzzle-game
+	* Objectif : Réaliser un maximum de ligne pleines.
+	* Game-play :
+		* Une pièce composée de 4 blocs tombe du ciel dans un puits de largeur égale à 7 blocs et de hauteur 14 blocs.
+		* Le joueur peut déplacer cette pièce de façon latérale (touches gauche/droite) dans les limites du puits.
+		* Le joueur peut faire faire des rotations de + ou - 90° à la pièce (touches Z/A).
+		* Si le joueur arrive à réaliser une ligne horizontale complète alors la ligne en question disparait.
 
 Il reste beaucoup de choses à réaliser mais l'intention n'est pas de faire un jeu complètement fini à 100 % sans bugs, mais principalement de réaliser un premier projet avec LÖVE. Si vous vous êtes perdus ici vous pouvez faire ce que vous voulez avec le code, cf la non licence.
 
 Quelques liens :
 
-Tetris sur Wikipédia : https://fr.wikipedia.org/wiki/Tetris
-Framework LÖVE : https://love2d.org/
-Unlicense : http://unlicense.org/
-
-* : désolé pour le jeu de mots...
+	* Tetris sur Wikipédia : https://fr.wikipedia.org/wiki/Tetris
+	* Framework LÖVE : https://love2d.org/
+	* Unlicense : http://unlicense.org/
