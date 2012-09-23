@@ -1,1 +1,15 @@
 Bonjour ?
+
+Le Tetriste est un remake du jeu Tetris. Ce remake n'a pas pour objectif de réaliser un projet comercial ou même à être diffusé à un quelquonc public.
+Le jeu est un point de depart à un projet plus grand. Il à pour objectifs d'aprendre aux développeur à coder en lua ainsi qu'a réaliser un projet en commun.
+Le développement de ce jeu n'est donc qu'un test et un apprentissage.
+
+Le jeu : 
+	- Genre : Puzzule-game
+	- Objectif : Réaliser un maximum de ligne pleines.
+	- Game-play :
+		Une pièce composé de 4 blocks tombe du ciel dans un puit de largeur égale à 7 blocks et de hauteur 14 block.
+		Le joueur peut déplacer cette pièce de façon lattéral (bouton gauche/droite)
+		Le joueur peut faire faire des rotations de +ou- 90° à la pièce (bouton Z/A)
+		La physique du jeu empeche une pièce de se déplacer en dehors des espaces vide du puit. 
+		Si le joueur arrive à réaliser une ligne horizontal de 7 blocks consécutif alors un tetris est gagné et la ligne en question disparait.
