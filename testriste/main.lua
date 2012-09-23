@@ -19,21 +19,24 @@ function love.load()
 	
 	bloc_marge_initiale = nil --décalage horizontal pour centrer les nouvelles pièces (en bloc de pièce)
 	bloc_taille = nil --largeur d'un bloc de pièce = puissance de 2 maximum (en pixels)
+	bool_clavier_action = false --drapeau marquant l'utilisation d'une touche d'action (booléen)
+	bool_fin_de_partie = false --drapeau marquant la fin du jeu (booléen)
 	compteur_de_temps = 0.0 --compteur de temps pour savoir quand faire quoi (en secondes)
 	compteur_de_temps_clavier = 0.0 --compteur de temps pour savoir quand faire quoi, version clavier (en secondes)
 	compteur_de_temps_clavier_maximum = nil --temps entre chaque touche d'action (en secondes)
-	compteur_de_temps_coefficient = 0.995 --coefficient pour accélérer le temps d'un tour (en % / 100)
+	compteur_de_temps_coefficient = 0.95 --coefficient pour accélérer le temps d'un tour (en % / 100)
 	compteur_de_temps_maximum = 0.5 --temps d'un tour (en secondes)
 	couleurs = {} --couleurs
-	fin_de_partie = false --drapeau marquant la fin du jeu (booléen)
 	matrice = {} --tableau multi-dimensionnel contenant nos pièces et blocs (pour stocker des lignes puis des colonnes de blocs de pièces)
 	matrice_hauteur = 14 --hauteur de la matrice (en bloc de pièce)
 	matrice_largeur = 7 --largeur de la matrice (en bloc de pièce)
 	matrice_marge_hauteur = nil --décalage vertical pour centrer la matrice (en pixels)
 	matrice_marge_largeur = nil --décalage horizontal pour centrer la matrice (en pixels)
 	nombre_actions_par_tour = 0.125 --coefficient déterminant le nombre d'actions par tour (pas d'unité ?)
-	piece_en_mouvement = {0, {{0, 0}, {0, 0}, {0, 0}, {0, 0}}} --pièce en cours de mouvement (couleur puis coordonnées (ligne, colonne))
-	piece_en_mouvement_rotation = {0, {0, 0}, 0} --pièce en cours de mouvement (couleur puis coordonnées principale (ligne, colonne) et enfin son état rotatif)
+	piece_en_mouvement_calculee = nil --cache des coordonnées complètes de chacun des blocs de la pièce en cours de mouvement, optimisation
+	piece_en_mouvement_centre = {0, 0} --coordonnées {y, x} du "centre" de la pièce en cours de mouvement (en bloc de matrice {ligne, colonne})
+	piece_en_mouvement_rotation = 0 --rotation de la pièce en cours de mouvement (en degré)
+	piece_en_mouvement_type = 0 --type de la pièce en cours de mouvement (de 1 à 7 inclus cf variables couleurs & pieces)
 	pieces = {} --pieces
 	
 	--format RGB/RVB sur un octet (de 0 à 255)
@@ -79,98 +82,22 @@ function love.load()
 	print('matrice_marge_largeur = ', matrice_marge_largeur)
 end
 
-function debug_matrice(m)
-	for i,v in ipairs(m) do for i2,v2 in ipairs(v) do print('m[', i, '][', i2, '] = ', v2) end end
-end
+function debug_matrice(m) for i,v in ipairs(m) do for i2,v2 in ipairs(v) do print('m[', i, '][', i2, '] = ', v2) end end end
+function debug_piece(p) for i,v in ipairs(p) do for i2,v2 in ipairs(v) do print('p[', i, '][', i2, '] = ', v2) end end end
 
-function debug_piece(p)
-	for i,v in ipairs(p) do for i2,v2 in ipairs(v) do print('p[', i, '][', i2, '] = ', v2) end end
-end
-
-function donne_la_position_de_la_piece(t, y, x, r) --Type, position Y, position X, Rotation
-	piece = {}
-	
-	--description de la pièce suivant le type choisi (t) avec le centrage (y;x)
-	if t == 1 then  -- Type de pièce : Barre plate
-		if r == 0 then -- En position 0°
-			piece = {{y + 0, x - 1}, {y + 0, x + 0}, {y + 0, x + 1}, {y + 0, x + 2}} -- La pièce a pour "centre" le deuxieme block en partant de la gauche
-		elseif r == 90 then -- En position 90°
-			piece = {{y - 1, x + 0}, {y + 0, x + 0}, {y + 1, x + 0}, {y + 2, x + 0}}
-		elseif r == 180 then -- En position 180°
-			piece = {{y + 0, x + 1}, {y + 0, x + 0}, {y + 0, x - 1}, {y + 0, x - 2}}
-		elseif r == 270 then -- En position 270°
-			piece = {{y + 1, x + 0}, {y + 0, x + 0}, {y - 1, x + 0}, {y - 2, x + 0}}
-		end
-	elseif t == 2 then  -- Type de pièce : "L" inversé
-		if r == 0 then -- En position 0°
-			piece = {{y - 1, x - 1}, {y + 0, x - 1}, {y + 0, x + 0}, {y + 0, x + 1}} -- La pièce a pour "centre" le deuxieme block de la grande barre
-		elseif r == 90 then -- En position 90°
-			piece = {{y - 1, x + 1}, {y - 1, x + 0}, {y + 0, x + 0}, {y + 1, x + 0}}
-		elseif r == 180 then -- En position 180°
-			piece = {{y + 1, x + 1}, {y + 0, x + 1}, {y + 0, x + 0}, {y + 0, x - 1}}
-		elseif r == 270 then -- En position 270°
-			piece = {{y + 1, x - 1}, {y + 1, x + 0}, {y + 0, x + 0}, {y - 1, x + 0}}
-		end		
-	elseif t == 3 then  -- Type de pièce : "L" classique
-		if r == 0 then -- En position 0°
-			piece = {{y + 0, x - 1}, {y + 0, x + 0}, {y + 0, x + 1}, {y - 1, x + 1}} -- La pièce a pour "centre" le deuxieme block de la grande barre
-		elseif r == 90 then -- En position 90°
-			piece = {{y - 1, x + 0}, {y + 0, x + 0}, {y + 1, x + 0}, {y + 1, x + 1}}
-		elseif r == 180 then -- En position 180°
-			piece = {{y + 0, x + 1}, {y + 0, x + 0}, {y + 0, x - 1}, {y + 1, x - 1}}
-		elseif r == 270 then -- En position 270°
-			piece = {{y + 1, x + 0}, {y + 0, x + 0}, {y - 1, x + 0}, {y - 1, x - 1}}
-		end	
-	elseif t == 4 then  -- Type de pièce : Carré
-		if r == 0 then -- En position 0°
-			piece = {{y - 1, x + 0}, {y + 0, x + 0}, {y - 1, x + 1}, {y + 0, x + 1}} -- La pièce a pour "centre" le coin bas gauche
-		elseif r == 90 then -- En position 90°
-			piece = {{y - 1, x + 0}, {y + 0, x + 0}, {y - 1, x + 1}, {y + 0, x + 1}}
-		elseif r == 180 then -- En position 180°
-			piece = {{y - 1, x + 0}, {y + 0, x + 0}, {y - 1, x + 1}, {y + 0, x + 1}}
-		elseif r == 270 then -- En position 270°
-			piece = {{y - 1, x + 0}, {y + 0, x + 0}, {y - 1, x + 1}, {y + 0, x + 1}}
-		end	
-	elseif t == 5 then  -- Type de pièce : "Z" inversé
-		if r == 0 then -- En position 0°
-			piece = {{y + 0, x - 1}, {y + 0, x + 0}, {y - 1, x + 0}, {y - 1, x + 1}} -- La pièce a pour "centre" le deuxieme block du milieu en bas
-		elseif r == 90 then -- En position 90°
-			piece = {{y - 1, x + 0}, {y + 0, x + 0}, {y + 0, x + 1}, {y + 1, x + 1}}
-		elseif r == 180 then -- En position 180°
-			piece = {{y + 0, x + 1}, {y + 0, x + 0}, {y + 1, x + 0}, {y + 1, x - 1}}
-		elseif r == 270 then -- En position 270°
-			piece = {{y + 1, x + 0}, {y + 0, x + 0}, {y + 0, x - 1}, {y - 1, x - 1}}
-		end	
-	elseif t == 6 then  -- Type de pièce : "T"
-		if r == 0 then -- En position 0°
-			piece = {{y + 0, x - 1}, {y + 0, x + 0}, {y - 1, x + 0}, {y + 0, x + 1}} -- La pièce a pour "centre" le deuxieme block de la grande barre
-		elseif r == 90 then -- En position 90°
-			piece = {{y - 1, x + 0}, {y + 0, x + 0}, {y + 0, x + 1}, {y + 1, x + 0}}
-		elseif r == 180 then -- En position 180°
-			piece = {{y + 0, x + 1}, {y + 0, x + 0}, {y + 1, x + 0}, {y + 0, x - 1}}
-		elseif r == 270 then -- En position 270°
-			piece = {{y + 1, x + 0}, {y + 0, x + 0}, {y + 0, x - 1}, {y - 1, x + 0}}
-		end	
-	elseif t == 7 then  -- Type de pièce : "Z" classique
-		if r == 0 then -- En position 0°
-			piece = {{y + 0, x + 1}, {y + 0, x + 0}, {y - 1, x + 0}, {y - 1, x - 1}} -- La pièce a pour "centre" le deuxieme block du milieu en bas
-		elseif r == 90 then -- En position 90°
-			piece = {{y + 1, x + 0}, {y + 0, x + 0}, {y + 0, x + 1}, {y - 1, x + 1}}
-		elseif r == 180 then -- En position 180°
-			piece = {{y + 0, x - 1}, {y + 0, x + 0}, {y + 1, x + 0}, {y + 1, x + 1}}
-		elseif r == 270 then -- En position 270°
-			piece = {{y - 1, x + 0}, {y + 0, x + 0}, {y + 0, x - 1}, {y + 1, x - 1}}
-		end
-	end
-	
-	return piece
-end
-
-function donne_la_piece(t, y, x) --Type, margin Y, margin X
+function convertir_en_piece(t, r, c) --Type, Rotation, Centre {y, x}
 	piece = {{0, 0}, {0, 0}, {0, 0}, {0, 0}}
 	
 	for s = 1, 4 do
-		piece[s] = {pieces[t][s][1] + y, pieces[t][s][2] + x}
+		if r == 0 then
+			piece[s] = {pieces[t][s][1] + c[1], pieces[t][s][2] + c[2]}
+		elseif r == 90 then
+			piece[s] = {pieces[t][s][2] + c[1], pieces[t][s][1] + c[2]}
+		elseif r == 180 then
+			piece[s] = {-pieces[t][s][1] + c[1], -pieces[t][s][2] + c[2]}
+		elseif r == 270 then
+			piece[s] = {-pieces[t][s][2] + c[1], -pieces[t][s][1] + c[2]}
+		end
 	end
 	
 	return piece
@@ -225,38 +152,46 @@ function love.update(dt)
 	compteur_de_temps = compteur_de_temps + dt --ajout du temps passé depuis le dernier appel dans notre compteur
 	
 	--gestion du clavier servant à l'action (= qui restent appuyées)
-	if love.keyboard.isDown("left") or love.keyboard.isDown("right") or love.keyboard.isDown("down") or love.keyboard.isDown("up") then --moche, j'ai pas mieux pour le moment, un flag géré dans keypressed peut-être ?
+	if bool_clavier_action then
 		compteur_de_temps_clavier = compteur_de_temps_clavier + dt --ajout du temps passé depuis le dernier appel dans notre compteur, version clavier
 		
 		if compteur_de_temps_clavier >= compteur_de_temps_clavier_maximum then
+			y = 0
+			x = 0
+			
 			if love.keyboard.isDown("left") then
-				tenter_de_bouger_la_piece(matrice, piece_en_mouvement[2], 0, -1)
+				y = 0
+				x = -1
 			elseif love.keyboard.isDown("right") then
-				tenter_de_bouger_la_piece(matrice, piece_en_mouvement[2], 0, 1)
+				y = 0
+				x = 1
 			elseif love.keyboard.isDown("down") then
-				tenter_de_bouger_la_piece(matrice, piece_en_mouvement[2], 1, 0)
+				y = 1
+				x = 0
 			elseif love.keyboard.isDown("up") then
-				--hum
+				piece_en_mouvement_rotation = piece_en_mouvement_rotation + 0 --à faire
 			end
+			
+			tenter_de_bouger_la_piece(matrice, piece_en_mouvement_calculee, y, x)
 			
 			compteur_de_temps_clavier = compteur_de_temps_clavier - compteur_de_temps_clavier_maximum
 		end
 	end
 	
 	if compteur_de_temps >= compteur_de_temps_maximum then --a-t-on fini un tour ?
-		if piece_en_mouvement[1] == 0 then --doit-on générer une nouvelle pièce ?
-			piece_en_mouvement[1] = math.random(7) --lancer de dé
-			piece_en_mouvement[2] = donne_la_piece(piece_en_mouvement[1], 1, bloc_marge_initiale) --donne moi une nouvelle pièce !
+		if piece_en_mouvement_type == 0 then --doit-on générer une nouvelle pièce ?
+			piece_en_mouvement_type = math.random(7) --nombre aléatoire entre 1 et 7 inclus
+			piece_en_mouvement_calculee = convertir_en_piece(piece_en_mouvement_type, 0, {1, bloc_marge_initiale})
 			
-			fin_de_partie = not puis_je_mettre_la_piece_sur_la_matrice(matrice, piece_en_mouvement[2], 0, 0) --si la pièce nouvellement créé tente d'écraser des blocs déjà présent, game over
+			bool_fin_de_partie = not puis_je_mettre_la_piece_sur_la_matrice(matrice, piece_en_mouvement_calculee, 0, 0) --si la pièce nouvellement créé tente d'écraser des blocs déjà présent, game over
 		else --pas de nouvelle pièce à générer
 			--tentons de faire descendre l'actuelle
-			if not suis_je_hors_limite(piece_en_mouvement[2], 1, 0) and puis_je_mettre_la_piece_sur_la_matrice(matrice, piece_en_mouvement[2], 1, 0) then --semblable à tenter_de_bouger_la_piece, on ne pourrait pas l'utiliser ?
-				piece_en_mouvement[2] = decale_la_piece(piece_en_mouvement[2], 1, 0)
+			if not suis_je_hors_limite(piece_en_mouvement_calculee, 1, 0) and puis_je_mettre_la_piece_sur_la_matrice(matrice, piece_en_mouvement_calculee, 1, 0) then --semblable à tenter_de_bouger_la_piece, on ne pourrait pas l'utiliser ?
+				piece_en_mouvement_calculee = decale_la_piece(piece_en_mouvement_calculee, 1, 0)
 			else
 				--on ne peut plus descendre
-				matrice = ecrit_la_piece_sur_la_matrice(matrice, piece_en_mouvement[2], piece_en_mouvement[1])
-				piece_en_mouvement[1] = 0 --demande de nouvelle pièce pour le prochain tour
+				matrice = ecrit_la_piece_sur_la_matrice(matrice, piece_en_mouvement_calculee, piece_en_mouvement_type)
+				piece_en_mouvement_type = 0 --demande de nouvelle pièce pour le prochain tour
 				
 				compteur_de_temps_maximum = compteur_de_temps_coefficient * compteur_de_temps_maximum --prochain tour plus rapide en attendant la gestion des lignes / score / niveaux...
 				print('compteur_de_temps_maximum = ', compteur_de_temps_maximum) --debug
@@ -266,7 +201,7 @@ function love.update(dt)
 		compteur_de_temps = compteur_de_temps - compteur_de_temps_maximum --on enlève le temps d'un tour au compteur
 	end
 	
-	if fin_de_partie then
+	if bool_fin_de_partie then
 		love.timer.sleep(3) --3 sec de pause, utile pour debug
 		love.event.quit() --game over, bye
 	end
@@ -293,13 +228,13 @@ function love.draw()
 	end
 	
 	--pièce en mouvement
-	if piece_en_mouvement[1] ~= 0 then
+	if piece_en_mouvement_type ~= 0 then
 		for s = 1, 4 do
-			love.graphics.setColor(couleurs[piece_en_mouvement[1]][1], couleurs[piece_en_mouvement[1]][2], couleurs[piece_en_mouvement[1]][3])
-			love.graphics.rectangle("fill", matrice_marge_largeur + (piece_en_mouvement[2][s][2] - 1) * bloc_taille, matrice_marge_hauteur + (piece_en_mouvement[2][s][1] - 1) * bloc_taille, bloc_taille, bloc_taille)
+			love.graphics.setColor(couleurs[piece_en_mouvement_type][1], couleurs[piece_en_mouvement_type][2], couleurs[piece_en_mouvement_type][3])
+			love.graphics.rectangle("fill", matrice_marge_largeur + (piece_en_mouvement_calculee[s][2] - 1) * bloc_taille, matrice_marge_hauteur + (piece_en_mouvement_calculee[s][1] - 1) * bloc_taille, bloc_taille, bloc_taille)
 			
 			love.graphics.setColor(couleurs[8][1], couleurs[8][2], couleurs[8][3])
-			love.graphics.rectangle("line", matrice_marge_largeur + (piece_en_mouvement[2][s][2] - 1) * bloc_taille, matrice_marge_hauteur + (piece_en_mouvement[2][s][1] - 1) * bloc_taille, bloc_taille, bloc_taille)
+			love.graphics.rectangle("line", matrice_marge_largeur + (piece_en_mouvement_calculee[s][2] - 1) * bloc_taille, matrice_marge_hauteur + (piece_en_mouvement_calculee[s][1] - 1) * bloc_taille, bloc_taille, bloc_taille)
 		end
 	end
 end
@@ -308,12 +243,15 @@ end
 function love.keypressed(key, unicode)
 	if key == "escape" then
 		love.event.quit()
+	elseif key == "down" or key == "left" or key == "right" or key == "up" then
+		bool_clavier_action = true
 	end
 end
 
 --gestion du relachement des touches
 function love.keyreleased(key, unicode)
-	if key == "left" or key == "right" or key == "down" or key == "up" then
+	if key == "down" or key == "left" or key == "right" or key == "up" then
+		bool_clavier_action = false
 		compteur_de_temps_clavier = 0.0 --reset du temps d'appui de touche de direction
 	end
 end
