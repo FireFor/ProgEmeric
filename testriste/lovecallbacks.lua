@@ -31,7 +31,7 @@ function love.update(dt)
 	
 	if compteur_de_temps >= compteur_de_temps_maximum then --a-t-on fini un tour ?
 		if piece_en_mouvement_type == 0 then --doit-on générer une nouvelle pièce ?
-			piece_en_mouvement_type = piece_en_mouvement_type_prochain
+			piece_en_mouvement_type = piece_en_mouvement_type_prochain --le changement c'est maintenant ^^'
 			piece_en_mouvement_type_prochain = math.random(7) --nombre aléatoire entre 1 et 7 inclus
 			piece_en_mouvement_calculee = convertir_en_piece(piece_en_mouvement_type, 0, {1, bloc_marge_initiale})
 			
@@ -53,7 +53,7 @@ function love.update(dt)
 	end
 	
 	if bool_fin_de_partie then
-		love.timer.sleep(3) --3 sec de pause, utile pour debug
+		love.timer.sleep(3) --pause avant de quitter brutalement
 		love.event.quit() --game over, bye
 	end
 end
@@ -87,6 +87,15 @@ function love.draw()
 			love.graphics.setColor(couleurs[8][1], couleurs[8][2], couleurs[8][3])
 			love.graphics.rectangle("line", matrice_marge_largeur + (piece_en_mouvement_calculee[s][2] - 1) * bloc_taille, matrice_marge_hauteur + (piece_en_mouvement_calculee[s][1] - 1) * bloc_taille, bloc_taille, bloc_taille)
 		end
+	end
+	
+	piece_prochaine = convertir_en_piece(piece_en_mouvement_type_prochain, 0, {4, 4})
+	for s = 1, 4 do
+		love.graphics.setColor(couleurs[piece_en_mouvement_type_prochain][1], couleurs[piece_en_mouvement_type_prochain][2], couleurs[piece_en_mouvement_type_prochain][3])
+		love.graphics.rectangle("fill", (piece_prochaine[s][2] - 1) * bloc_taille,  (piece_prochaine[s][1] - 1) * bloc_taille, bloc_taille, bloc_taille)
+		
+		love.graphics.setColor(couleurs[8][1], couleurs[8][2], couleurs[8][3])
+		love.graphics.rectangle("line", (piece_prochaine[s][2] - 1) * bloc_taille, (piece_prochaine[s][1] - 1) * bloc_taille, bloc_taille, bloc_taille)
 	end
 end
 

@@ -12,7 +12,7 @@ function convertir_en_piece(t, r, c) --Type, Rotation, Centre {y, x}
 			piece[s] = {-pieces[t][s][2] + c[1], -pieces[t][s][1] + c[2]}
 		end
 	end
-	debug_piece(piece)
+	
 	return piece
 end
 
