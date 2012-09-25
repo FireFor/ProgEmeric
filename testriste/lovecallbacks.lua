@@ -19,8 +19,6 @@ function love.update(dt)
 			elseif love.keyboard.isDown("down") then
 				y = 1
 				x = 0
-			elseif love.keyboard.isDown("up") then
-				piece_en_mouvement_rotation = piece_en_mouvement_rotation + 0 --à faire
 			end
 			
 			if not suis_je_hors_limite(piece_en_mouvement_calculee, y, x) and puis_je_mettre_la_piece_sur_la_matrice(matrice, piece_en_mouvement_calculee, y, x) then
@@ -115,14 +113,14 @@ end
 function love.keypressed(key, unicode)
 	if key == "escape" then
 		love.event.quit()
-	elseif key == "down" or key == "left" or key == "right" or key == "up" then
+	elseif key == "down" or key == "left" or key == "right" then
 		bool_clavier_action = true
 	end
 end
 
 --gestion du relachement des touches
 function love.keyreleased(key, unicode)
-	if key == "down" or key == "left" or key == "right" or key == "up" then
+	if key == "down" or key == "left" or key == "right" then
 		bool_clavier_action = false
 		compteur_de_temps_clavier = 0.0 --reset du temps d'appui de touche de direction
 	end
