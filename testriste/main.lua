@@ -21,7 +21,6 @@ function love.load()
 	matrice_marge_hauteur = nil --décalage vertical pour centrer la matrice (en pixels)
 	matrice_marge_largeur = nil --décalage horizontal pour centrer la matrice (en pixels)
 	nombre_actions_par_tour = 0.125 --coefficient déterminant le nombre d'actions par tour (pas d'unité ?)
-	piece_en_mouvement_calculee = nil --cache des coordonnées complètes de chacun des blocs de la pièce en cours de mouvement, optimisation
 	piece_en_mouvement_centre = {0, 0} --coordonnées {y, x} du "centre" de la pièce en cours de mouvement (en bloc de matrice {ligne, colonne})
 	piece_en_mouvement_rotation = 0 --rotation de la pièce en cours de mouvement (en degré)
 	piece_en_mouvement_type = 0 --type de la pièce en cours de mouvement (de 1 à 7 inclus cf variables couleurs & pieces)
