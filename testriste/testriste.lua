@@ -44,14 +44,6 @@ function decale_la_piece(p, y, x) --Piece, offset Y, offset X
 	return p
 end
 
-function tenter_de_bouger_la_piece(m, p, y, x) --matrice, Piece, offset Y, offset X
-	if not suis_je_hors_limite(p, y, x) and puis_je_mettre_la_piece_sur_la_matrice(m, p, y, x) then
-		p = decale_la_piece(p, y, x)
-	end
-	
-	return p
-end
-
 function ecrit_la_piece_sur_la_matrice(m, p, t) --matrice, Piece, Type
 	for s = 1, 4 do
 		m[p[s][1]][p[s][2]] = t

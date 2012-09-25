@@ -23,7 +23,10 @@ function love.update(dt)
 				piece_en_mouvement_rotation = piece_en_mouvement_rotation + 0 --à faire
 			end
 			
-			tenter_de_bouger_la_piece(matrice, piece_en_mouvement_calculee, y, x)
+			if not suis_je_hors_limite(piece_en_mouvement_calculee, y, x) and puis_je_mettre_la_piece_sur_la_matrice(matrice, piece_en_mouvement_calculee, y, x) then
+				piece_en_mouvement_centre = {piece_en_mouvement_centre[1] + y, piece_en_mouvement_centre[2] + x}
+				piece_en_mouvement_calculee = decale_la_piece(piece_en_mouvement_calculee, y, x)
+			end
 			
 			compteur_de_temps_clavier = compteur_de_temps_clavier - compteur_de_temps_clavier_maximum
 		end
@@ -33,12 +36,14 @@ function love.update(dt)
 		if piece_en_mouvement_type == 0 then --doit-on générer une nouvelle pièce ?
 			piece_en_mouvement_type = piece_en_mouvement_type_prochain --le changement c'est maintenant ^^'
 			piece_en_mouvement_type_prochain = math.random(7) --nombre aléatoire entre 1 et 7 inclus
+			piece_en_mouvement_centre = {1, bloc_marge_initiale}
 			piece_en_mouvement_calculee = convertir_en_piece(piece_en_mouvement_type, 0, {1, bloc_marge_initiale})
 			
 			bool_fin_de_partie = not puis_je_mettre_la_piece_sur_la_matrice(matrice, piece_en_mouvement_calculee, 0, 0) --si la pièce nouvellement créé tente d'écraser des blocs déjà présent, game over
 		else --pas de nouvelle pièce à générer
 			--tentons de faire descendre l'actuelle
-			if not suis_je_hors_limite(piece_en_mouvement_calculee, 1, 0) and puis_je_mettre_la_piece_sur_la_matrice(matrice, piece_en_mouvement_calculee, 1, 0) then --semblable à tenter_de_bouger_la_piece, on ne pourrait pas l'utiliser ?
+			if not suis_je_hors_limite(piece_en_mouvement_calculee, 1, 0) and puis_je_mettre_la_piece_sur_la_matrice(matrice, piece_en_mouvement_calculee, 1, 0) then
+				piece_en_mouvement_centre = {piece_en_mouvement_centre[1] + 1, piece_en_mouvement_centre[2] + 0}
 				piece_en_mouvement_calculee = decale_la_piece(piece_en_mouvement_calculee, 1, 0)
 			else
 				--on ne peut plus descendre
@@ -96,6 +101,13 @@ function love.draw()
 		
 		love.graphics.setColor(couleurs[8][1], couleurs[8][2], couleurs[8][3])
 		love.graphics.rectangle("line", (piece_prochaine[s][2] - 1) * bloc_taille, (piece_prochaine[s][1] - 1) * bloc_taille, bloc_taille, bloc_taille)
+	end
+	
+	love.graphics.print("type: " .. piece_en_mouvement_type .. "\nrotation: " .. piece_en_mouvement_rotation .. "\ncentre y: " .. piece_en_mouvement_centre[1] .. "\ncentre x: " .. piece_en_mouvement_centre[2], 0, 0)
+	
+	if piece_en_mouvement_type ~= 0 then
+		piece = convertir_en_piece(piece_en_mouvement_type, piece_en_mouvement_rotation, piece_en_mouvement_centre)
+		love.graphics.print("-> (" .. piece[1][1] .. ", " .. piece[1][2] .. "), (" .. piece[2][1] .. ", " .. piece[2][2] .. "), (" .. piece[3][1] .. ", " .. piece[3][2] .. "), (" .. piece[4][1] .. ", " .. piece[4][2] .. ")\nou (" .. piece_en_mouvement_calculee[1][1] .. ", " .. piece_en_mouvement_calculee[1][2] .. "), (" .. piece_en_mouvement_calculee[2][1] .. ", " .. piece_en_mouvement_calculee[2][2] .. "), (" .. piece_en_mouvement_calculee[3][1] .. ", " .. piece_en_mouvement_calculee[3][2] .. "), (" .. piece_en_mouvement_calculee[4][1] .. ", " .. piece_en_mouvement_calculee[4][2] .. ")", 0, 55)
 	end
 end
 
