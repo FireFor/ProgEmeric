@@ -1,8 +1,29 @@
 --calculs suivant le temps, coeur du jeu
 function love.update(dt)
 	local piece
+	local 	z
 	
+	z = 0
+			
 	compteur_de_temps = compteur_de_temps + dt --ajout du temps passé depuis le dernier appel dans notre compteur
+	
+	if bool_calvier_tourn then
+		if (love.keyboard.isDown("up") or love.keyboard.isDown("w")) and (bool_calvier_tourn == true) then
+			bool_calvier_tourn = false
+			z = (piece_en_mouvement_rotation + 90) % 360
+		elseif love.keyboard.isDown("q")  and bool_calvier_tourn == true then
+			bool_calvier_tourn = false
+			z = (piece_en_mouvement_rotation - 90) % 360
+		end
+		
+		piece = convertir_en_piece(piece_en_mouvement_type, z, piece_en_mouvement_centre)
+		
+		if not suis_je_hors_limite(piece, 0, 0) and puis_je_mettre_la_piece_sur_la_matrice(matrice, piece, 0, 0) then
+			piece_en_mouvement_rotation = z
+			piece_en_mouvement_centre = {piece_en_mouvement_centre[1] + 0, piece_en_mouvement_centre[2] + 0}
+		end		
+	end 
+	
 	
 	--gestion du clavier servant à l'action (= qui restent appuyées)
 	if bool_clavier_action then
@@ -12,7 +33,7 @@ function love.update(dt)
 			local y, x
 			
 			y = 0
-			x = 0
+			x = 0		
 			
 			if love.keyboard.isDown("left") then
 				y = 0
@@ -22,10 +43,10 @@ function love.update(dt)
 				x = 1
 			elseif love.keyboard.isDown("down") then
 				y = 1
-				x = 0	
+				x = 0
 			end
 			
-			piece = convertir_en_piece(piece_en_mouvement_type, piece_en_mouvement_rotation, piece_en_mouvement_centre)
+			piece = convertir_en_piece(piece_en_mouvement_type, z, piece_en_mouvement_centre)
 			
 			if not suis_je_hors_limite(piece, y, x) and puis_je_mettre_la_piece_sur_la_matrice(matrice, piece, y, x) then
 				piece_en_mouvement_centre = {piece_en_mouvement_centre[1] + y, piece_en_mouvement_centre[2] + x}
@@ -127,29 +148,14 @@ function love.keypressed(key, unicode)
 	elseif key == "down" or key == "left" or key == "right" then
 		bool_clavier_action = true
 	elseif  key == "up"  or key == "w"  or key == "q" then
-		if love.keyboard.isDown("up") or love.keyboard.isDown("w") then
-			piece_en_mouvement_rotation = (piece_en_mouvement_rotation + 90) % 360
-			piece = convertir_en_piece(piece_en_mouvement_type, piece_en_mouvement_rotation, piece_en_mouvement_centre)
-			if not suis_je_hors_limite(piece, 0, 0) and puis_je_mettre_la_piece_sur_la_matrice(matrice, piece, 0, 0) then
-				piece_en_mouvement_centre = {piece_en_mouvement_centre[1] + 0, piece_en_mouvement_centre[2] + 0}
-			else	
-				piece_en_mouvement_rotation = (piece_en_mouvement_rotation - 90) % 360
-			end
-		elseif love.keyboard.isDown("q") then
-			piece_en_mouvement_rotation = (piece_en_mouvement_rotation - 90) % 360
-			piece = convertir_en_piece(piece_en_mouvement_type, piece_en_mouvement_rotation, piece_en_mouvement_centre)
-			if not suis_je_hors_limite(piece, 0, 0) and puis_je_mettre_la_piece_sur_la_matrice(matrice, piece, 0, 0) then
-				piece_en_mouvement_centre = {piece_en_mouvement_centre[1] + 0, piece_en_mouvement_centre[2] + 0}
-			else	
-				piece_en_mouvement_rotation = (piece_en_mouvement_rotation + 90) % 360
-			end
-		end
+		--si je souhaite tourner 
+		bool_calvier_tourn = true
 	end
 end
 
 --gestion du relachement des touches
 function love.keyreleased(key, unicode)
-	if key == "down" or key == "left" or key == "right"  or key == "up"  or key == "w"  or key == "q" then
+	if key == "down" or key == "left" or key == "right" then
 		bool_clavier_action = false
 		compteur_de_temps_clavier = 0.0 --reset du temps d'appui de touche de direction
 	end
