@@ -23,6 +23,12 @@ function love.update(dt)
 			elseif love.keyboard.isDown("down") then
 				y = 1
 				x = 0
+			elseif love.keyboard.isDown("up") then
+				piece_en_mouvement_rotation = (piece_en_mouvement_rotation + 90) % 360
+			elseif love.keyboard.isDown("w") then
+				piece_en_mouvement_rotation = (piece_en_mouvement_rotation + 90) % 360
+			elseif love.keyboard.isDown("q") then
+				piece_en_mouvement_rotation = (piece_en_mouvement_rotation + 90) % 360		
 			end
 			
 			piece = convertir_en_piece(piece_en_mouvement_type, piece_en_mouvement_rotation, piece_en_mouvement_centre)
@@ -124,14 +130,14 @@ end
 function love.keypressed(key, unicode)
 	if key == "escape" then
 		love.event.quit()
-	elseif key == "down" or key == "left" or key == "right" then
+	elseif key == "down" or key == "left" or key == "right"  or key == "up"  or key == "w"  or key == "q" then
 		bool_clavier_action = true
 	end
 end
 
 --gestion du relachement des touches
 function love.keyreleased(key, unicode)
-	if key == "down" or key == "left" or key == "right" then
+	if key == "down" or key == "left" or key == "right"  or key == "up"  or key == "w"  or key == "q" then
 		bool_clavier_action = false
 		compteur_de_temps_clavier = 0.0 --reset du temps d'appui de touche de direction
 	end
