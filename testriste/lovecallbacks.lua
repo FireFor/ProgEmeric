@@ -1,6 +1,6 @@
 --calculs suivant le temps, coeur du jeu
 function love.update(dt)
-	local piece, rotation
+	local piece, rotation = 90
 	
 	compteur_de_temps = compteur_de_temps + dt --ajout du temps passé depuis le dernier appel dans notre compteur
 	
@@ -135,7 +135,15 @@ function love.draw()
 	end
 	
 	--debug
-	love.graphics.print("type: " .. piece_en_mouvement_type .. "\nrotation: " .. piece_en_mouvement_rotation .. "\ncentre y: " .. piece_en_mouvement_centre[1] .. "\ncentre x: " .. piece_en_mouvement_centre[2] .. "\n(" .. piece[1][1] .. ", " .. piece[1][2] .. "), (" .. piece[2][1] .. ", " .. piece[2][2] .. "), (" .. piece[3][1] .. ", " .. piece[3][2] .. "), (" .. piece[4][1] .. ", " .. piece[4][2] .. ")", 0, 0)
+	love.graphics.print("type: " .. piece_en_mouvement_type .. "\nrotation: " .. piece_en_mouvement_rotation .. "\ncentre y: " .. piece_en_mouvement_centre[1] .. "\ncentre x: " .. piece_en_mouvement_centre[2] .. "\ncoords: " .. piece_en_mouvement_rotation .. ": (" .. piece[1][1] .. ", " .. piece[1][2] .. "), (" .. piece[2][1] .. ", " .. piece[2][2] .. "), (" .. piece[3][1] .. ", " .. piece[3][2] .. "), (" .. piece[4][1] .. ", " .. piece[4][2] .. ")", 0, 0)
+	piece = convertir_en_piece(piece_en_mouvement_type, 0, {0,0})
+	love.graphics.print(0 .. ": (" .. piece[1][1] .. ", " .. piece[1][2] .. "), (" .. piece[2][1] .. ", " .. piece[2][2] .. "), (" .. piece[3][1] .. ", " .. piece[3][2] .. "), (" .. piece[4][1] .. ", " .. piece[4][2] .. ")", 0, 250)
+	piece = convertir_en_piece(piece_en_mouvement_type, 90, {0,0})
+	love.graphics.print(90 .. ": (" .. piece[1][1] .. ", " .. piece[1][2] .. "), (" .. piece[2][1] .. ", " .. piece[2][2] .. "), (" .. piece[3][1] .. ", " .. piece[3][2] .. "), (" .. piece[4][1] .. ", " .. piece[4][2] .. ")", 0, 270)
+	piece = convertir_en_piece(piece_en_mouvement_type, 180, {0,0})
+	love.graphics.print(180 .. ": (" .. piece[1][1] .. ", " .. piece[1][2] .. "), (" .. piece[2][1] .. ", " .. piece[2][2] .. "), (" .. piece[3][1] .. ", " .. piece[3][2] .. "), (" .. piece[4][1] .. ", " .. piece[4][2] .. ")", 0, 290)
+	piece = convertir_en_piece(piece_en_mouvement_type, 270, {0,0})
+	love.graphics.print(270 .. ": (" .. piece[1][1] .. ", " .. piece[1][2] .. "), (" .. piece[2][1] .. ", " .. piece[2][2] .. "), (" .. piece[3][1] .. ", " .. piece[3][2] .. "), (" .. piece[4][1] .. ", " .. piece[4][2] .. ")", 0, 310)
 end
 
 --gestion des touches n'ayant pas vocation de rester appuyées
