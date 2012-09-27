@@ -19,8 +19,6 @@ function convertir_en_piece(t, r, c) --Type, Rotation, Centre {y, x}
 end
 
 function suis_je_hors_limite(p, y, x) --Piece, offset Y, offset X
-	local s
-	
 	for s = 1, 4 do
 		if p[s][1] + y <= 0 or p[s][1] + y > matrice_hauteur or p[s][2] + x <= 0 or p[s][2] + x > matrice_largeur then
 			return true --si un des blocs de la pièce est en dehors de la matrice, la réponse est oui
@@ -31,8 +29,6 @@ function suis_je_hors_limite(p, y, x) --Piece, offset Y, offset X
 end
 
 function puis_je_mettre_la_piece_sur_la_matrice(m, p, y, x) --matrice, Piece, offset Y, offset X
-	local s
-	
 	for s = 1, 4 do
 		if m[p[s][1] + y][p[s][2] + x] ~= 0 then
 			return false --si la matrice contient déjà quelque chose à un des blocs de la pièce, la réponse est non
@@ -43,8 +39,6 @@ function puis_je_mettre_la_piece_sur_la_matrice(m, p, y, x) --matrice, Piece, of
 end
 
 function decale_la_piece(p, y, x) --Piece, offset Y, offset X
-	local s
-	
 	for s = 1, 4 do
 		p[s] = {p[s][1] + y, p[s][2] + x}
 	end
@@ -53,8 +47,6 @@ function decale_la_piece(p, y, x) --Piece, offset Y, offset X
 end
 
 function ecrit_la_piece_sur_la_matrice(m, p, t) --matrice, Piece, Type
-	local s
-	
 	for s = 1, 4 do
 		m[p[s][1]][p[s][2]] = t
 	end
