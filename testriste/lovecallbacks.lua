@@ -73,9 +73,9 @@ function love.update(dt)
 				--on ne peut plus descendre
 				matrice = ecrit_la_piece_sur_la_matrice(matrice, piece, piece_en_mouvement_type)
 				--on verifie et modifi la matrice
-				local NbLigne
-				NbLigne = modification_matrice ()
-				compteur_point(NbLigne)
+				local nb_ligne
+				nb_ligne = modification_matrice ()
+				compteur_point(nb_ligne)
 				piece_en_mouvement_type = 0 --demande de nouvelle pièce pour le prochain tour
 								
 			end
