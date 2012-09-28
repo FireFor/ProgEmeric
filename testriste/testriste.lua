@@ -18,6 +18,32 @@ function convertir_en_piece(t, r, c) --Type, Rotation, Centre {y, x}
 	return p
 end
 
+function annalyse_ligne()
+	
+	local x, y, m, n
+	
+	x = 1
+	y = 1
+	m = 1
+	n = 1
+	
+	for y = matrice_hauteur, 1, -1 do
+		for x = 1 , matrice_largeur do
+			if matrice[y][x] == 0 then
+				--love.event.quit()
+				break
+			elseif 	x == 7 then
+				for m = matrice_hauteur + 1, y , -1 do
+					for n = 1 , matrice_largeur do
+						matrice[m][n] = matrice[m-1][n]
+					end
+				end
+			end
+		end
+	end
+	--return x
+end 
+
 function suis_je_hors_limite(p, y, x) --Piece, offset Y, offset X
 	for s = 1, 4 do
 		if p[s][1] + y <= 0 or p[s][1] + y > matrice_hauteur or p[s][2] + x <= 0 or p[s][2] + x > matrice_largeur then

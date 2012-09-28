@@ -72,6 +72,7 @@ function love.update(dt)
 			else
 				--on ne peut plus descendre
 				matrice = ecrit_la_piece_sur_la_matrice(matrice, piece, piece_en_mouvement_type)
+				annalyse_ligne ()
 				piece_en_mouvement_type = 0 --demande de nouvelle pièce pour le prochain tour
 				
 				compteur_de_temps_maximum = compteur_de_temps_coefficient * compteur_de_temps_maximum --prochain tour plus rapide en attendant la gestion des lignes / score / niveaux...
@@ -86,6 +87,8 @@ function love.update(dt)
 		love.event.quit() --game over, bye
 	end
 end
+
+
 
 --function d'affichage, on dessine la matrice puis la pièce en mouvement
 function love.draw()
