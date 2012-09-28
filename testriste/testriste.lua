@@ -30,14 +30,14 @@ function annalyse_ligne()
 	for y = matrice_hauteur, 1, -1 do
 		for x = 1 , matrice_largeur do
 			if matrice[y][x] == 0 then
-				--love.event.quit()
 				break
 			elseif 	x == 7 then
-				for m = matrice_hauteur + 1, y , -1 do
+				for m = y-1, 1, - 1 do
 					for n = 1 , matrice_largeur do
-						matrice[m][n] = matrice[m-1][n]
+						matrice[m + 1][n] = matrice[m][n]
 					end
 				end
+				y = y + 2
 			end
 		end
 	end
