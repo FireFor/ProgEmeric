@@ -72,10 +72,12 @@ function love.update(dt)
 			else
 				--on ne peut plus descendre
 				matrice = ecrit_la_piece_sur_la_matrice(matrice, piece, piece_en_mouvement_type)
-				annalyse_ligne ()
+				--on verifie et modifi la matrice
+				local NbLigne
+				NbLigne = modification_matrice ()
+				compteur_point(NbLigne)
 				piece_en_mouvement_type = 0 --demande de nouvelle pièce pour le prochain tour
-				
-				compteur_de_temps_maximum = compteur_de_temps_coefficient * compteur_de_temps_maximum --prochain tour plus rapide en attendant la gestion des lignes / score / niveaux...
+								
 			end
 		end
 		

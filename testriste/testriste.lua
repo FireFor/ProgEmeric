@@ -18,31 +18,47 @@ function convertir_en_piece(t, r, c) --Type, Rotation, Centre {y, x}
 	return p
 end
 
-function annalyse_ligne()
-	
-	local x, y, m, n
-	
-	x = 1
-	y = 1
-	m = 1
-	n = 1
-	
-	for y = matrice_hauteur, 1, -1 do
+--Function qui efface les lignes pleines
+function modification_matrice()
+	local NbLigne
+	--boucle de test ligne
+	for y =  1, matrice_hauteur  do
 		for x = 1 , matrice_largeur do
 			if matrice[y][x] == 0 then
 				break
 			elseif 	x == 7 then
+				NbLigne = NbLigne + 1
+				--boucle de mise à jour matrice
 				for m = y-1, 1, - 1 do
 					for n = 1 , matrice_largeur do
+						--décale la ligne superieur sur la ligne inferieur
 						matrice[m + 1][n] = matrice[m][n]
 					end
 				end
-				y = y + 2
 			end
 		end
 	end
-	--return x
-end 
+	return NbLigne
+end
+
+function compteur_point(NbLigne)
+	local score
+	score = 0
+	if NbLigne == 0 then
+		score = 0
+	elseif NbLigne == 1 then
+		score = 1
+	elseif NbLigne == 2 then
+		score = 2
+	elseif NbLigne == 3 then
+		score = 5
+	elseif NbLigne == 4 then
+		score = 10
+	end
+	score_tetris = score_tetris + score
+	compteur_de_temps_coefficient = (compteur_de_temps_coefficient - (NbLigne / 100))
+	compteur_de_temps_maximum = compteur_de_temps_coefficient * compteur_de_temps_maximum --prochain tour plus rapide en attendant la gestion des lignes / score / niveaux...
+end
 
 function suis_je_hors_limite(p, y, x) --Piece, offset Y, offset X
 	for s = 1, 4 do

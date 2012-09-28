@@ -13,7 +13,7 @@ function love.load()
 	compteur_de_temps = 0.0 --compteur de temps pour savoir quand faire quoi (en secondes)
 	compteur_de_temps_clavier = 0.0 --compteur de temps pour savoir quand faire quoi, version clavier (en secondes)
 	compteur_de_temps_clavier_maximum = nil --temps entre chaque touche d'action (en secondes)
-	compteur_de_temps_coefficient = 1,00 --0.95 --coefficient pour accélérer le temps d'un tour (en % / 100)
+	compteur_de_temps_coefficient = 1.000 --0.95 --coefficient pour accélérer le temps d'un tour (en % / 100)
 	compteur_de_temps_maximum = 0.5 --temps d'un tour (en secondes)
 	couleurs = {} --couleurs
 	matrice = {} --tableau multi-dimensionnel contenant nos pièces et blocs (pour stocker des lignes puis des colonnes de blocs de pièces)
@@ -26,6 +26,7 @@ function love.load()
 	piece_en_mouvement_rotation = 0 --rotation de la pièce en cours de mouvement (en degré)
 	piece_en_mouvement_type = 0 --type de la pièce en cours de mouvement (de 1 à 7 inclus cf variables couleurs & pieces)
 	piece_en_mouvement_type_prochain = 0 --prochain type de la pièce en cours de mouvement (de 1 à 7 inclus cf variables couleurs & pieces)
+	score_tetris = 0.00 --score du jeu.
 	pieces = {} --pieces
 	
 	--format RGB/RVB sur un octet (de 0 à 255)
