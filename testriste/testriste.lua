@@ -18,16 +18,18 @@ function convertir_en_piece(t, r, c) --Type, Rotation, Centre {y, x}
 	return p
 end
 
---fonction qui efface les lignes pleines
-function modification_matrice()
-	local nb_ligne = 0
+--teste et efface les lignes pleines
+function enlever_lignes_pleines()
+	local nombre_lignes = 0
+	
 	--boucle de test ligne
-	for y =  1, matrice_hauteur  do
+	for y = 1, matrice_hauteur do
 		for x = 1, matrice_largeur do
 			if matrice[y][x] == 0 then
 				break
-			elseif 	x == 7 then
-				nb_ligne = nb_ligne + 1
+			elseif x == 7 then
+				nombre_lignes = nombre_lignes + 1
+				
 				--boucle de mise à jour matrice
 				for m = y-1, 1, - 1 do
 					for n = 1, matrice_largeur do
@@ -38,26 +40,23 @@ function modification_matrice()
 			end
 		end
 	end
+	
 	return nb_ligne
 end
 
 --fonction de comptage des points
-function compteur_point(nb_ligne)
-	local score
-	score = 0
-	if nb_ligne == 0 then
-		score = 0
-	elseif nb_ligne == 1 then
-		score = 1
-	elseif nb_ligne == 2 then
-		score = 2
-	elseif nb_ligne == 3 then
-		score = 5
-	elseif nb_ligne == 4 then
-		score = 10
-	end
+function compter_points(nombre_lignes)
+	local score, scores
+	
+	scores = {0, 1, 2, 5, 10}
+	score = scores[nombre_lignes + 1]
+	
 	score_tetris = score_tetris + score
-	compteur_de_temps_maximum = compteur_de_temps_coefficient * compteur_de_temps_maximum --prochain tour plus rapide en attendant la gestion des lignes / score / niveaux...
+	
+	if score > 0 then
+		--compteur_de_temps_coefficient = (compteur_de_temps_coefficient - (nombre_lignes / 100))
+		compteur_de_temps_maximum = compteur_de_temps_coefficient * compteur_de_temps_maximum
+	end
 end
 
 function suis_je_hors_limite(p, y, x) --Piece, offset Y, offset X

@@ -26,8 +26,8 @@ function love.load()
 	piece_en_mouvement_rotation = 0 --rotation de la pièce en cours de mouvement (en degré)
 	piece_en_mouvement_type = 0 --type de la pièce en cours de mouvement (de 1 à 7 inclus cf variables couleurs & pieces)
 	piece_en_mouvement_type_prochain = 0 --prochain type de la pièce en cours de mouvement (de 1 à 7 inclus cf variables couleurs & pieces)
-	score_tetris = 0.00 --score du jeu.
 	pieces = {} --pieces
+	score_tetris = 0 --score du jeu
 	
 	--format RGB/RVB sur un octet (de 0 à 255)
 	couleurs[1] = {0, 255, 255} --cyan pour I

@@ -72,12 +72,14 @@ function love.update(dt)
 			else
 				--on ne peut plus descendre
 				matrice = ecrit_la_piece_sur_la_matrice(matrice, piece, piece_en_mouvement_type)
-				--on verifie et modifi la matrice
-				local nb_ligne
-				nb_ligne = modification_matrice ()
-				compteur_point(nb_ligne)
+				
+				--on vérifie et modifie la matrice
+				local nombre_lignes
+				nombre_lignes = enlever_lignes_pleines()
+				compter_points(nombre_lignes)
+				
 				piece_en_mouvement_type = 0 --demande de nouvelle pièce pour le prochain tour
-								
+				
 			end
 		end
 		
@@ -89,8 +91,6 @@ function love.update(dt)
 		love.event.quit() --game over, bye
 	end
 end
-
-
 
 --function d'affichage, on dessine la matrice puis la pièce en mouvement
 function love.draw()
@@ -142,13 +142,14 @@ function love.draw()
 	--debug
 	love.graphics.print("type: " .. piece_en_mouvement_type .. "\nrotation: " .. piece_en_mouvement_rotation .. "\ncentre y: " .. piece_en_mouvement_centre[1] .. "\ncentre x: " .. piece_en_mouvement_centre[2] .. "\ncoords: " .. piece_en_mouvement_rotation .. ": (" .. piece[1][1] .. ", " .. piece[1][2] .. "), (" .. piece[2][1] .. ", " .. piece[2][2] .. "), (" .. piece[3][1] .. ", " .. piece[3][2] .. "), (" .. piece[4][1] .. ", " .. piece[4][2] .. ")", 0, 0)
 	piece = convertir_en_piece(piece_en_mouvement_type, 0, {0,0})
-	love.graphics.print(0 .. ": (" .. piece[1][1] .. ", " .. piece[1][2] .. "), (" .. piece[2][1] .. ", " .. piece[2][2] .. "), (" .. piece[3][1] .. ", " .. piece[3][2] .. "), (" .. piece[4][1] .. ", " .. piece[4][2] .. ")", 0, 250)
+	love.graphics.print(0 .. ": (" .. piece[1][1] .. ", " .. piece[1][2] .. "), (" .. piece[2][1] .. ", " .. piece[2][2] .. "), (" .. piece[3][1] .. ", " .. piece[3][2] .. "), (" .. piece[4][1] .. ", " .. piece[4][2] .. ")", 0, 300)
 	piece = convertir_en_piece(piece_en_mouvement_type, 90, {0,0})
-	love.graphics.print(90 .. ": (" .. piece[1][1] .. ", " .. piece[1][2] .. "), (" .. piece[2][1] .. ", " .. piece[2][2] .. "), (" .. piece[3][1] .. ", " .. piece[3][2] .. "), (" .. piece[4][1] .. ", " .. piece[4][2] .. ")", 0, 270)
+	love.graphics.print(90 .. ": (" .. piece[1][1] .. ", " .. piece[1][2] .. "), (" .. piece[2][1] .. ", " .. piece[2][2] .. "), (" .. piece[3][1] .. ", " .. piece[3][2] .. "), (" .. piece[4][1] .. ", " .. piece[4][2] .. ")", 0, 325)
 	piece = convertir_en_piece(piece_en_mouvement_type, 180, {0,0})
-	love.graphics.print(180 .. ": (" .. piece[1][1] .. ", " .. piece[1][2] .. "), (" .. piece[2][1] .. ", " .. piece[2][2] .. "), (" .. piece[3][1] .. ", " .. piece[3][2] .. "), (" .. piece[4][1] .. ", " .. piece[4][2] .. ")", 0, 290)
+	love.graphics.print(180 .. ": (" .. piece[1][1] .. ", " .. piece[1][2] .. "), (" .. piece[2][1] .. ", " .. piece[2][2] .. "), (" .. piece[3][1] .. ", " .. piece[3][2] .. "), (" .. piece[4][1] .. ", " .. piece[4][2] .. ")", 0, 350)
 	piece = convertir_en_piece(piece_en_mouvement_type, 270, {0,0})
-	love.graphics.print(270 .. ": (" .. piece[1][1] .. ", " .. piece[1][2] .. "), (" .. piece[2][1] .. ", " .. piece[2][2] .. "), (" .. piece[3][1] .. ", " .. piece[3][2] .. "), (" .. piece[4][1] .. ", " .. piece[4][2] .. ")", 0, 310)
+	love.graphics.print(270 .. ": (" .. piece[1][1] .. ", " .. piece[1][2] .. "), (" .. piece[2][1] .. ", " .. piece[2][2] .. "), (" .. piece[3][1] .. ", " .. piece[3][2] .. "), (" .. piece[4][1] .. ", " .. piece[4][2] .. ")", 0, 375)
+	love.graphics.print("score: " .. score_tetris, 0, 450)
 end
 
 --gestion des touches n'ayant pas vocation de rester appuyées
