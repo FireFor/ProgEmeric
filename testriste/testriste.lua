@@ -20,7 +20,7 @@ end
 
 --Function qui efface les lignes pleines
 function modification_matrice()
-	local NbLigne
+	local NbLigne = 0
 	--boucle de test ligne
 	for y =  1, matrice_hauteur  do
 		for x = 1 , matrice_largeur do
