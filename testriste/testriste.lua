@@ -41,7 +41,7 @@ function enlever_lignes_pleines()
 		end
 	end
 	
-	return nb_ligne
+	return nombre_lignes
 end
 
 --fonction de comptage des points
