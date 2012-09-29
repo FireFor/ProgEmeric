@@ -140,15 +140,15 @@ function love.draw()
 	end
 	
 	--debug
-	love.graphics.print("type: " .. piece_en_mouvement_type .. "\nrotation: " .. piece_en_mouvement_rotation .. "\ncentre y: " .. piece_en_mouvement_centre[1] .. "\ncentre x: " .. piece_en_mouvement_centre[2] .. "\ncoords: " .. piece_en_mouvement_rotation .. ": (" .. piece[1][1] .. ", " .. piece[1][2] .. "), (" .. piece[2][1] .. ", " .. piece[2][2] .. "), (" .. piece[3][1] .. ", " .. piece[3][2] .. "), (" .. piece[4][1] .. ", " .. piece[4][2] .. ")", 0, 0)
-	piece = convertir_en_piece(piece_en_mouvement_type, 0, {0,0})
-	love.graphics.print(0 .. ": (" .. piece[1][1] .. ", " .. piece[1][2] .. "), (" .. piece[2][1] .. ", " .. piece[2][2] .. "), (" .. piece[3][1] .. ", " .. piece[3][2] .. "), (" .. piece[4][1] .. ", " .. piece[4][2] .. ")", 0, 300)
-	piece = convertir_en_piece(piece_en_mouvement_type, 90, {0,0})
-	love.graphics.print(90 .. ": (" .. piece[1][1] .. ", " .. piece[1][2] .. "), (" .. piece[2][1] .. ", " .. piece[2][2] .. "), (" .. piece[3][1] .. ", " .. piece[3][2] .. "), (" .. piece[4][1] .. ", " .. piece[4][2] .. ")", 0, 325)
-	piece = convertir_en_piece(piece_en_mouvement_type, 180, {0,0})
-	love.graphics.print(180 .. ": (" .. piece[1][1] .. ", " .. piece[1][2] .. "), (" .. piece[2][1] .. ", " .. piece[2][2] .. "), (" .. piece[3][1] .. ", " .. piece[3][2] .. "), (" .. piece[4][1] .. ", " .. piece[4][2] .. ")", 0, 350)
-	piece = convertir_en_piece(piece_en_mouvement_type, 270, {0,0})
-	love.graphics.print(270 .. ": (" .. piece[1][1] .. ", " .. piece[1][2] .. "), (" .. piece[2][1] .. ", " .. piece[2][2] .. "), (" .. piece[3][1] .. ", " .. piece[3][2] .. "), (" .. piece[4][1] .. ", " .. piece[4][2] .. ")", 0, 375)
+	-- love.graphics.print("type: " .. piece_en_mouvement_type .. "\nrotation: " .. piece_en_mouvement_rotation .. "\ncentre y: " .. piece_en_mouvement_centre[1] .. "\ncentre x: " .. piece_en_mouvement_centre[2] .. "\ncoords: " .. piece_en_mouvement_rotation .. ": (" .. piece[1][1] .. ", " .. piece[1][2] .. "), (" .. piece[2][1] .. ", " .. piece[2][2] .. "), (" .. piece[3][1] .. ", " .. piece[3][2] .. "), (" .. piece[4][1] .. ", " .. piece[4][2] .. ")", 0, 0)
+	-- piece = convertir_en_piece(piece_en_mouvement_type, 0, {0,0})
+	-- love.graphics.print(0 .. ": (" .. piece[1][1] .. ", " .. piece[1][2] .. "), (" .. piece[2][1] .. ", " .. piece[2][2] .. "), (" .. piece[3][1] .. ", " .. piece[3][2] .. "), (" .. piece[4][1] .. ", " .. piece[4][2] .. ")", 0, 300)
+	-- piece = convertir_en_piece(piece_en_mouvement_type, 90, {0,0})
+	-- love.graphics.print(90 .. ": (" .. piece[1][1] .. ", " .. piece[1][2] .. "), (" .. piece[2][1] .. ", " .. piece[2][2] .. "), (" .. piece[3][1] .. ", " .. piece[3][2] .. "), (" .. piece[4][1] .. ", " .. piece[4][2] .. ")", 0, 325)
+	-- piece = convertir_en_piece(piece_en_mouvement_type, 180, {0,0})
+	-- love.graphics.print(180 .. ": (" .. piece[1][1] .. ", " .. piece[1][2] .. "), (" .. piece[2][1] .. ", " .. piece[2][2] .. "), (" .. piece[3][1] .. ", " .. piece[3][2] .. "), (" .. piece[4][1] .. ", " .. piece[4][2] .. ")", 0, 350)
+	-- piece = convertir_en_piece(piece_en_mouvement_type, 270, {0,0})
+	-- love.graphics.print(270 .. ": (" .. piece[1][1] .. ", " .. piece[1][2] .. "), (" .. piece[2][1] .. ", " .. piece[2][2] .. "), (" .. piece[3][1] .. ", " .. piece[3][2] .. "), (" .. piece[4][1] .. ", " .. piece[4][2] .. ")", 0, 375)
 	love.graphics.print("score: " .. score_tetris, 0, 450)
 end
 
